@@ -1,22 +1,29 @@
 "use client";
 
 import { motion } from 'framer-motion';
+import { VideoPlayer } from './VideoPlayer';
 import { formatNumber } from '@/lib/utils';
-
-interface VideoMetrics {
-  views?: number;
-  likes?: number;
-  comments?: number;
-  shares?: number;
-}
 
 interface VideoEmbedProps {
   embedUrl: string;
-  metrics?: VideoMetrics;
+  directVideoUrl?: string;
+  poster?: string;
+  metrics?: {
+    views?: number;
+    likes?: number;
+    comments?: number;
+    shares?: number;
+  };
   hashtags?: string[];
 }
 
-export function VideoEmbed({ embedUrl, metrics, hashtags }: VideoEmbedProps) {
+export function VideoEmbed({ 
+  embedUrl, 
+  directVideoUrl,
+  poster,
+  metrics, 
+  hashtags 
+}: VideoEmbedProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -24,12 +31,26 @@ export function VideoEmbed({ embedUrl, metrics, hashtags }: VideoEmbedProps) {
       className="bg-gray-900/50 backdrop-blur-lg rounded-xl p-4 border border-white/10"
     >
       <div className="aspect-video w-full mb-4">
-        <iframe
-          src={embedUrl}
-          className="w-full h-full rounded-lg"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
+        {directVideoUrl ? (
+          <VideoPlayer
+            src={directVideoUrl}
+            poster={poster}
+            className="rounded-lg overflow-hidden"
+            options={{
+              playbackRates: [0.5, 1, 1.5, 2],
+              userActions: {
+                hotkeys: true
+              }
+            }}
+          />
+        ) : (
+          <iframe
+            src={embedUrl}
+            className="w-full h-full rounded-lg"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        )}
       </div>
 
       {metrics && (
